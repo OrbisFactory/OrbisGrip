@@ -25,20 +25,17 @@ import java.util.concurrent.CompletableFuture;
  */
 public class HyGripTestCommand extends AbstractCommand {
 
-    private static final String USAGE = "Usage: /hygrip test [baseX baseY baseZ] [direction]. Direction: north, south, east, west, up, down.";
+    private static final String USAGE = "Usage: /hygrip test [gripId] [baseX baseY baseZ] [direction]. Direction: north, south, east, west, up, down.";
 
     private final HyGripPlugin plugin;
 
     public HyGripTestCommand(@Nonnull HyGripPlugin plugin) {
-        super("test", "Starts a test crane at base looking in direction (source = base+1, target = base-1). Optional: base coords and direction.");
+        super("test", "Starts a test crane with a specific grip ID at base looking in direction. Optional: gripId, base coords and direction.");
         this.plugin = plugin;
-        // Allow 0 to 4 optional positional args without declaring them (AbstractCommand.setAllowsExtraArguments).
+        // Allow optional positional args.
         setAllowsExtraArguments(true);
     }
 
-    @Nullable
-
-    
     @Override
     protected CompletableFuture<Void> execute(@Nonnull CommandContext context) {
         if (!context.isPlayer()) {
@@ -64,29 +61,40 @@ public class HyGripTestCommand extends AbstractCommand {
             return CompletableFuture.completedFuture(null);
         }
 
+        String gripId = "hygrip:standard_hook";
         int baseX = 0, baseY = 117, baseZ = 0;
         CraneDirection direction = CraneDirection.EAST;
 
         String[] args = getArgsFromContext(context);
         if (args != null && args.length >= 1) {
             try {
-                if (args.length >= 4) {
-                    baseX = Integer.parseInt(args[0]);
-                    baseY = Integer.parseInt(args[1]);
-                    baseZ = Integer.parseInt(args[2]);
-                    String dirStr = args[3].trim().toLowerCase(Locale.ROOT);
+                int argOffset = 0;
+                // If first arg is not a number, it's the gripId
+                try {
+                    Integer.parseInt(args[0]);
+                } catch (NumberFormatException e) {
+                    gripId = args[0];
+                    argOffset = 1;
+                }
+
+                int remaining = args.length - argOffset;
+                if (remaining >= 4) {
+                    baseX = Integer.parseInt(args[argOffset]);
+                    baseY = Integer.parseInt(args[argOffset + 1]);
+                    baseZ = Integer.parseInt(args[argOffset + 2]);
+                    String dirStr = args[argOffset + 3].trim().toLowerCase(Locale.ROOT);
                     CraneDirection parsed = CraneDirection.byName(dirStr);
                     if (parsed == null) {
                         context.sendMessage(Message.raw("Unknown direction: " + dirStr + ". " + USAGE));
                         return CompletableFuture.completedFuture(null);
                     }
                     direction = parsed;
-                } else if (args.length >= 3) {
-                    baseX = Integer.parseInt(args[0]);
-                    baseY = Integer.parseInt(args[1]);
-                    baseZ = Integer.parseInt(args[2]);
-                } else if (args.length >= 1) {
-                    String dirStr = args[0].trim().toLowerCase(Locale.ROOT);
+                } else if (remaining >= 3) {
+                    baseX = Integer.parseInt(args[argOffset]);
+                    baseY = Integer.parseInt(args[argOffset + 1]);
+                    baseZ = Integer.parseInt(args[argOffset + 2]);
+                } else if (remaining >= 1) {
+                    String dirStr = args[argOffset].trim().toLowerCase(Locale.ROOT);
                     CraneDirection parsed = CraneDirection.byName(dirStr);
                     if (parsed != null) direction = parsed;
                 }
@@ -94,6 +102,12 @@ public class HyGripTestCommand extends AbstractCommand {
                 context.sendMessage(Message.raw("Invalid number in coordinates. " + USAGE));
                 return CompletableFuture.completedFuture(null);
             }
+        }
+
+        // Verify grip ID exists
+        if (plugin.getGripRegistry().getGrip(gripId) == null) {
+            context.sendMessage(Message.raw("Grip definition not found: " + gripId + ". Using default."));
+            gripId = "hygrip:standard_hook";
         }
 
         int dx = direction.dx;
@@ -107,6 +121,7 @@ public class HyGripTestCommand extends AbstractCommand {
         int targetZ = baseZ - dz;
 
         CraneStateComponent state = new CraneStateComponent();
+        state.setGripDefinitionId(gripId);
         state.setBaseX(baseX);
         state.setBaseY(baseY);
         state.setBaseZ(baseZ);
@@ -114,8 +129,8 @@ public class HyGripTestCommand extends AbstractCommand {
 
         plugin.addTestCrane(world, state);
         context.sendMessage(Message.raw(String.format(
-                "HyGrip test crane at (%d,%d,%d) facing %s: source (%d,%d,%d) -> target (%d,%d,%d). Place inventory blocks there.",
-                baseX, baseY, baseZ, direction.name, sourceX, sourceY, sourceZ, targetX, targetY, targetZ)));
+                "HyGrip [%s] test crane at (%d,%d,%d) facing %s: source (%d,%d,%d) -> target (%d,%d,%d).",
+                gripId, baseX, baseY, baseZ, direction.name, sourceX, sourceY, sourceZ, targetX, targetY, targetZ)));
         return CompletableFuture.completedFuture(null);
     }
 
