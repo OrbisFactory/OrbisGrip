@@ -1,0 +1,8 @@
+{
+    "id": "hygrip:standard_hook",
+    "name": "Standard Iron Hook",
+    "model": "hygrip:models/entity/hooks/standard.hmo",
+    "speed": 1.0,
+    "maxReach": 16,
+    "capacity": 1
+}
