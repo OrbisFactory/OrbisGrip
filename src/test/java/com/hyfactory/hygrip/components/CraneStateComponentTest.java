@@ -56,10 +56,18 @@ class CraneStateComponentTest {
     }
 
     @Test
-    void gettersAndSettersForReachAndSpeed() {
-        state.setMoveSpeed(2);
-        state.setMaxReach(24);
-        assertEquals(2, state.getMoveSpeed());
-        assertEquals(24, state.getMaxReach());
+    void gettersAndSettersForGripDefinitionId() {
+        // The new system uses gripDefinitionId instead of moveSpeed/maxReach
+        // The actual speed/maxReach comes from GripRegistry based on the ID
+        state.setGripDefinitionId("hygrip:standard_hook");
+        assertEquals("hygrip:standard_hook", state.getGripDefinitionId());
+        
+        // Test held item entity tracking (Phase 4)
+        state.setHeldItemEntityId(12345);
+        assertTrue(state.hasHeldItemEntity());
+        assertEquals(12345, state.getHeldItemEntityId());
+        
+        state.setHeldItemEntityId(-1);
+        assertFalse(state.hasHeldItemEntity());
     }
 }

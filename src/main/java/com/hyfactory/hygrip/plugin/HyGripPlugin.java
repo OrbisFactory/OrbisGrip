@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class HyGripPlugin extends JavaPlugin {
 
@@ -121,7 +122,7 @@ public class HyGripPlugin extends JavaPlugin {
                      .forEach(gripRegistry::load);
             }
         } catch (Exception e) {
-            getLogger().info("Could not load grip definitions: " + e.getMessage());
+            Logger.getLogger(HyGripPlugin.class.getName()).warning("Could not load grip definitions: " + e.getMessage());
         }
     }
 

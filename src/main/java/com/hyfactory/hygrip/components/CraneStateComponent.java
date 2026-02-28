@@ -30,6 +30,8 @@ public class CraneStateComponent implements Component<EntityStore> {
     private ItemStack heldItem;
     /** ID of the grip definition for this crane (from JSON). */
     private String gripDefinitionId;
+    /** Network ID of the visual entity holding the picked item (for ModelAttachment). */
+    private int heldItemEntityId = -1;
 
     public int getBaseX() { return baseX; }
     public void setBaseX(int baseX) { this.baseX = baseX; }
@@ -69,6 +71,13 @@ public class CraneStateComponent implements Component<EntityStore> {
     public String getGripDefinitionId() { return gripDefinitionId; }
     public void setGripDefinitionId(String gripDefinitionId) { this.gripDefinitionId = gripDefinitionId; }
 
+    /** Returns the network ID of the visual item entity, or -1 if none. */
+    public int getHeldItemEntityId() { return heldItemEntityId; }
+    /** Sets the network ID of the visual item entity. */
+    public void setHeldItemEntityId(int heldItemEntityId) { this.heldItemEntityId = heldItemEntityId; }
+    /** Checks if there is a visual item entity attached. */
+    public boolean hasHeldItemEntity() { return heldItemEntityId != -1; }
+
     /** Sets current job: source and target block positions; moves arm to base and starts MOVING_TO_SOURCE. */
     public void setJob(int sourceX, int sourceY, int sourceZ, int targetX, int targetY, int targetZ) {
         this.sourceX = sourceX;
@@ -106,6 +115,7 @@ public class CraneStateComponent implements Component<EntityStore> {
         copy.targetZ = this.targetZ;
         copy.heldItem = this.heldItem != null ? this.heldItem.withQuantity(this.heldItem.getQuantity()) : null;
         copy.gripDefinitionId = this.gripDefinitionId;
+        copy.heldItemEntityId = this.heldItemEntityId;
         return copy;
     }
 }
