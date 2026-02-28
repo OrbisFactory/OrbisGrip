@@ -32,6 +32,9 @@ public class CraneStateComponent implements Component<EntityStore> {
     private String gripDefinitionId;
     /** Network ID of the visual entity holding the picked item (for ModelAttachment). */
     private int heldItemEntityId = -1;
+    /** Item type ID for restoration (e.g., "block:stone"). */
+    @Nullable
+    private String heldItemTypeId;
 
     public int getBaseX() { return baseX; }
     public void setBaseX(int baseX) { this.baseX = baseX; }
@@ -78,6 +81,10 @@ public class CraneStateComponent implements Component<EntityStore> {
     /** Checks if there is a visual item entity attached. */
     public boolean hasHeldItemEntity() { return heldItemEntityId != -1; }
 
+    @Nullable
+    public String getHeldItemTypeId() { return heldItemTypeId; }
+    public void setHeldItemTypeId(@Nullable String heldItemTypeId) { this.heldItemTypeId = heldItemTypeId; }
+
     /** Sets current job: source and target block positions; moves arm to base and starts MOVING_TO_SOURCE. */
     public void setJob(int sourceX, int sourceY, int sourceZ, int targetX, int targetY, int targetZ) {
         this.sourceX = sourceX;
@@ -116,6 +123,7 @@ public class CraneStateComponent implements Component<EntityStore> {
         copy.heldItem = this.heldItem != null ? this.heldItem.withQuantity(this.heldItem.getQuantity()) : null;
         copy.gripDefinitionId = this.gripDefinitionId;
         copy.heldItemEntityId = this.heldItemEntityId;
+        copy.heldItemTypeId = this.heldItemTypeId;
         return copy;
     }
 }
