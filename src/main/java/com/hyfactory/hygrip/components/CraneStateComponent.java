@@ -28,10 +28,8 @@ public class CraneStateComponent implements Component<EntityStore> {
     private int targetZ;
     @Nullable
     private ItemStack heldItem;
-    /** Max block distance the arm can move per tick (for movement system). */
-    private int moveSpeed = 1;
-    /** Max reach in blocks from base (optional constraint). */
-    private int maxReach = 16;
+    /** ID of the grip definition for this crane (from JSON). */
+    private String gripDefinitionId;
 
     public int getBaseX() { return baseX; }
     public void setBaseX(int baseX) { this.baseX = baseX; }
@@ -68,10 +66,8 @@ public class CraneStateComponent implements Component<EntityStore> {
     public ItemStack getHeldItem() { return heldItem; }
     public void setHeldItem(@Nullable ItemStack heldItem) { this.heldItem = heldItem; }
 
-    public int getMoveSpeed() { return moveSpeed; }
-    public void setMoveSpeed(int moveSpeed) { this.moveSpeed = moveSpeed; }
-    public int getMaxReach() { return maxReach; }
-    public void setMaxReach(int maxReach) { this.maxReach = maxReach; }
+    public String getGripDefinitionId() { return gripDefinitionId; }
+    public void setGripDefinitionId(String gripDefinitionId) { this.gripDefinitionId = gripDefinitionId; }
 
     /** Sets current job: source and target block positions; moves arm to base and starts MOVING_TO_SOURCE. */
     public void setJob(int sourceX, int sourceY, int sourceZ, int targetX, int targetY, int targetZ) {
@@ -109,8 +105,7 @@ public class CraneStateComponent implements Component<EntityStore> {
         copy.targetY = this.targetY;
         copy.targetZ = this.targetZ;
         copy.heldItem = this.heldItem != null ? this.heldItem.withQuantity(this.heldItem.getQuantity()) : null;
-        copy.moveSpeed = this.moveSpeed;
-        copy.maxReach = this.maxReach;
+        copy.gripDefinitionId = this.gripDefinitionId;
         return copy;
     }
 }

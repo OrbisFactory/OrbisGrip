@@ -2,6 +2,8 @@ package com.hyfactory.hygrip.systems;
 
 import com.hyfactory.hygrip.components.CranePhase;
 import com.hyfactory.hygrip.components.CraneStateComponent;
+import com.hyfactory.hygrip.plugin.GripDefinition;
+import com.hyfactory.hygrip.plugin.GripRegistry;
 
 /**
  * Updates crane arm position and phase transitions that depend only on movement.
@@ -9,13 +11,21 @@ import com.hyfactory.hygrip.components.CraneStateComponent;
  */
 public final class CraneMovementSystem {
 
-    public void tick(CraneStateComponent state) {
+    public void tick(CraneStateComponent state, GripRegistry registry) {
         CranePhase phase = state.getPhase();
         if (phase != CranePhase.MOVING_TO_SOURCE && phase != CranePhase.MOVING_TO_TARGET) {
             return;
         }
 
-        int step = Math.max(1, state.getMoveSpeed());
+        int step = 1;
+        String defId = state.getGripDefinitionId();
+        if (defId != null && registry != null) {
+            GripDefinition def = registry.getGrip(defId);
+            if (def != null) {
+                step = Math.max(1, (int) def.getSpeed());
+            }
+        }
+
         int dx = 0, dy = 0, dz = 0;
 
         if (phase == CranePhase.MOVING_TO_SOURCE) {

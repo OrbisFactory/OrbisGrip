@@ -27,6 +27,7 @@ public class HyGripPlugin extends JavaPlugin {
 
     /** Test cranes added by /hygrip test: (world, state) pairs. */
     private final List<TestCraneEntry> testCranes = new CopyOnWriteArrayList<>();
+    private final GripRegistry gripRegistry = new GripRegistry();
     private volatile ScheduledExecutorService tickScheduler;
 
     public HyGripPlugin(@Nonnull JavaPluginInit init) {
@@ -46,6 +47,10 @@ public class HyGripPlugin extends JavaPlugin {
             Files.write(Paths.get(logPath), line.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (Throwable t) { /* ignore */ }
         // #endregion
+
+        // Initialize and load Grip definitions from resources partition
+        loadGripDefinitions();
+
         getCommandRegistry().registerCommand(new HyGripCommand(this));
         // #region agent log
         try {
@@ -103,8 +108,25 @@ public class HyGripPlugin extends JavaPlugin {
      * Call this each frame/tick for each crane state (e.g. from a world tick or ECS).
      */
     public void runCraneTick(@Nonnull World world, @Nonnull CraneStateComponent state) {
-        craneMovementSystem.tick(state);
-        craneInteractionSystem.tick(world, state);
+        craneMovementSystem.tick(state, gripRegistry);
+        craneInteractionSystem.tick(world, state, gripRegistry);
+    }
+
+    private void loadGripDefinitions() {
+        try {
+            Path definitionsDir = Paths.get(System.getProperty("user.dir"), "src/main/resources/definitions/grips");
+            if (Files.exists(definitionsDir)) {
+                Files.list(definitionsDir)
+                     .filter(path -> path.toString().endsWith(".json"))
+                     .forEach(gripRegistry::load);
+            }
+        } catch (Exception e) {
+            getLogger().info("Could not load grip definitions: " + e.getMessage());
+        }
+    }
+
+    public GripRegistry getGripRegistry() {
+        return gripRegistry;
     }
 
     public CraneMovementSystem getCraneMovementSystem() {
