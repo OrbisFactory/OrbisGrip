@@ -109,7 +109,7 @@ public class HyGripPlugin extends JavaPlugin {
      * Call this each frame/tick for each crane state (e.g. from a world tick or ECS).
      */
     public void runCraneTick(@Nonnull World world, @Nonnull CraneStateComponent state) {
-        craneMovementSystem.tick(state, gripRegistry);
+        craneMovementSystem.tick(world, state, gripRegistry);
         craneInteractionSystem.tick(world, state, gripRegistry);
     }
 
