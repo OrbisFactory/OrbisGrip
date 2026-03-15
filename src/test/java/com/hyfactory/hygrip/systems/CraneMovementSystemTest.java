@@ -1,7 +1,7 @@
 package com.hyfactory.hygrip.systems;
 
 import com.hyfactory.hygrip.components.CranePhase;
-import com.hyfactory.hygrip.components.CraneStateComponent;
+import com.hyfactory.hygrip.components.CraneStateData;
 import com.hyfactory.hygrip.plugin.GripDefinition;
 import com.hyfactory.hygrip.plugin.GripRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class CraneMovementSystemTest {
 
     private CraneMovementSystem system;
-    private CraneStateComponent state;
+    private CraneStateData state;
     private TestGripRegistry registry;
 
     @BeforeEach
     void setUp() {
         system = new CraneMovementSystem();
-        state = new CraneStateComponent();
+        state = new CraneStateData();
         registry = new TestGripRegistry();
     }
 

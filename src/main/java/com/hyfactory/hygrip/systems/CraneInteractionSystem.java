@@ -2,6 +2,7 @@ package com.hyfactory.hygrip.systems;
 
 import com.hyfactory.hygrip.components.CranePhase;
 import com.hyfactory.hygrip.components.CraneStateComponent;
+import com.hyfactory.hygrip.components.CraneStateData;
 import com.hyfactory.hygrip.plugin.GripDefinition;
 import com.hyfactory.hygrip.plugin.GripRegistry;
 import com.hyfactory.hygrip.util.BlockInventoryHelper;
@@ -146,6 +147,13 @@ public final class CraneInteractionSystem {
     public void updateVisualEntityPosition(World world, CraneStateComponent state) {
         // Position tracking for visual entity - requires runtime API
         // Currently returns without action as entity creation returns -1
+    }
+
+    /**
+     * Overload for unit tests using CraneStateData (no Hytale runtime dependency).
+     */
+    public void updateVisualEntityPosition(World world, CraneStateData state) {
+        // No-op for tests - visual entity requires runtime
     }
     
     /**

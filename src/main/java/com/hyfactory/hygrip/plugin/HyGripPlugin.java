@@ -4,9 +4,12 @@ import com.hyfactory.hygrip.commands.HyGripCommand;
 import com.hyfactory.hygrip.components.CraneStateComponent;
 import com.hyfactory.hygrip.systems.CraneInteractionSystem;
 import com.hyfactory.hygrip.systems.CraneMovementSystem;
+import com.hypixel.hytale.codec.Codec;
+import com.hypixel.hytale.codec.lookup.Priority;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.meta.BlockState;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
@@ -40,26 +43,16 @@ public class HyGripPlugin extends JavaPlugin {
         // To connect from the Hytale client: (1) Add server 127.0.0.1:5520 in-game.
         // (2) In server console run /auth login browser (server auth). (3) Run /auth login device,
         // open the URL in browser and authorize this device; then join from Favorites.
-        // #region agent log
-        try {
-            String logPath = "c:\\Desarrollo\\004 Games\\001 HytaleMods\\00 HyFactory\\HyGrip\\.cursor\\debug.log";
-            String cwd = System.getProperty("user.dir", "");
-            String line = "{\"timestamp\":" + System.currentTimeMillis() + ",\"location\":\"HyGripPlugin.java:setup\",\"message\":\"Plugin setup started\",\"data\":{\"cwd\":\"" + cwd.replace("\\", "\\\\") + "\",\"thread\":\"" + Thread.currentThread().getName() + "\"},\"sessionId\":\"debug-session\",\"hypothesisId\":\"H1,H3,H4\"}\n";
-            Files.write(Paths.get(logPath), line.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (Throwable t) { /* ignore */ }
-        // #endregion
+
 
         // Initialize and load Grip definitions from resources partition
         loadGripDefinitions();
 
+        // Register the crane state component for blocks
+        BlockState.CODEC.register(Priority.DEFAULT, "hygrip:crane_state", CraneStateComponent.class, (Codec) CraneStateComponent.CODEC);
+
         getCommandRegistry().registerCommand(new HyGripCommand(this));
-        // #region agent log
-        try {
-            String logPath = "c:\\Desarrollo\\004 Games\\001 HytaleMods\\00 HyFactory\\HyGrip\\.cursor\\debug.log";
-            String line = "{\"timestamp\":" + System.currentTimeMillis() + ",\"location\":\"HyGripPlugin.java:setup\",\"message\":\"Plugin setup completed\",\"data\":{},\"sessionId\":\"debug-session\",\"hypothesisId\":\"H1,H3\"}\n";
-            Files.write(Paths.get(logPath), line.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (Throwable t) { /* ignore */ }
-        // #endregion
+
     }
 
     /**

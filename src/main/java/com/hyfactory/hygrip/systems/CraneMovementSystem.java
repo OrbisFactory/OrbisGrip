@@ -2,6 +2,7 @@ package com.hyfactory.hygrip.systems;
 
 import com.hyfactory.hygrip.components.CranePhase;
 import com.hyfactory.hygrip.components.CraneStateComponent;
+import com.hyfactory.hygrip.components.CraneStateData;
 import com.hyfactory.hygrip.plugin.GripDefinition;
 import com.hyfactory.hygrip.plugin.GripRegistry;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -60,6 +61,47 @@ public final class CraneMovementSystem {
      * Tick overload for systems that don't have world access (e.g., pure state logic).
      */
     public void tick(CraneStateComponent state, GripRegistry registry) {
+        CranePhase phase = state.getPhase();
+        if (phase != CranePhase.MOVING_TO_SOURCE && phase != CranePhase.MOVING_TO_TARGET) {
+            return;
+        }
+
+        int step = 1;
+        String defId = state.getGripDefinitionId();
+        if (defId != null && registry != null) {
+            GripDefinition def = registry.getGrip(defId);
+            if (def != null) {
+                step = Math.max(1, (int) def.getSpeed());
+            }
+        }
+
+        int dx = 0, dy = 0, dz = 0;
+
+        if (phase == CranePhase.MOVING_TO_SOURCE) {
+            dx = clampStep(state.getArmX(), state.getSourceX(), step);
+            dy = clampStep(state.getArmY(), state.getSourceY(), step);
+            dz = clampStep(state.getArmZ(), state.getSourceZ(), step);
+        } else {
+            dx = clampStep(state.getArmX(), state.getTargetX(), step);
+            dy = clampStep(state.getArmY(), state.getTargetY(), step);
+            dz = clampStep(state.getArmZ(), state.getTargetZ(), step);
+        }
+
+        state.setArmX(state.getArmX() + dx);
+        state.setArmY(state.getArmY() + dy);
+        state.setArmZ(state.getArmZ() + dz);
+
+        if (phase == CranePhase.MOVING_TO_SOURCE && state.isArmAt(state.getSourceX(), state.getSourceY(), state.getSourceZ())) {
+            state.setPhase(CranePhase.PICKING);
+        } else if (phase == CranePhase.MOVING_TO_TARGET && state.isArmAt(state.getTargetX(), state.getTargetY(), state.getTargetZ())) {
+            state.setPhase(CranePhase.DEPOSITING);
+        }
+    }
+
+    /**
+     * Tick overload for unit tests using CraneStateData (no Hytale runtime dependency).
+     */
+    public void tick(CraneStateData state, GripRegistry registry) {
         CranePhase phase = state.getPhase();
         if (phase != CranePhase.MOVING_TO_SOURCE && phase != CranePhase.MOVING_TO_TARGET) {
             return;

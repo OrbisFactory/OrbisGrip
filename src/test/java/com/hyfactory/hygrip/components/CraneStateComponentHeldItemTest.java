@@ -7,67 +7,67 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CraneStateComponentHeldItemTest {
 
-    private CraneStateComponent state;
+    private CraneStateData data;
 
     @BeforeEach
     void setUp() {
-        state = new CraneStateComponent();
+        data = new CraneStateData();
     }
 
     @Test
     void heldItemTypeIdIsNullByDefault() {
-        assertNull(state.getHeldItemTypeId());
+        assertNull(data.getHeldItemTypeId());
     }
 
     @Test
     void setHeldItemTypeIdStoresBlockItemType() {
-        state.setHeldItemTypeId("block:stone");
-        assertEquals("block:stone", state.getHeldItemTypeId());
+        data.setHeldItemTypeId("block:stone");
+        assertEquals("block:stone", data.getHeldItemTypeId());
     }
 
     @Test
     void setHeldItemTypeIdStoresItemType() {
-        state.setHeldItemTypeId("item:iron_ingot");
-        assertEquals("item:iron_ingot", state.getHeldItemTypeId());
+        data.setHeldItemTypeId("item:iron_ingot");
+        assertEquals("item:iron_ingot", data.getHeldItemTypeId());
     }
 
     @Test
     void setHeldItemTypeIdCanBeCleared() {
-        state.setHeldItemTypeId("block:diamond_ore");
-        assertNotNull(state.getHeldItemTypeId());
+        data.setHeldItemTypeId("block:diamond_ore");
+        assertNotNull(data.getHeldItemTypeId());
         
-        state.setHeldItemTypeId(null);
-        assertNull(state.getHeldItemTypeId());
+        data.setHeldItemTypeId(null);
+        assertNull(data.getHeldItemTypeId());
     }
 
     @Test
     void heldItemEntityIdIsNegativeByDefault() {
-        assertEquals(-1, state.getHeldItemEntityId());
-        assertFalse(state.hasHeldItemEntity());
+        assertEquals(-1, data.getHeldItemEntityId());
+        assertFalse(data.hasHeldItemEntity());
     }
 
     @Test
     void hasHeldItemEntityReturnsTrueWhenEntityIdIsSet() {
-        state.setHeldItemEntityId(100);
-        assertTrue(state.hasHeldItemEntity());
-        assertEquals(100, state.getHeldItemEntityId());
+        data.setHeldItemEntityId(100);
+        assertTrue(data.hasHeldItemEntity());
+        assertEquals(100, data.getHeldItemEntityId());
     }
 
     @Test
     void hasHeldItemEntityReturnsFalseWhenEntityIdIsReset() {
-        state.setHeldItemEntityId(100);
-        assertTrue(state.hasHeldItemEntity());
+        data.setHeldItemEntityId(100);
+        assertTrue(data.hasHeldItemEntity());
         
-        state.setHeldItemEntityId(-1);
-        assertFalse(state.hasHeldItemEntity());
+        data.setHeldItemEntityId(-1);
+        assertFalse(data.hasHeldItemEntity());
     }
 
     @Test
     void clonePreservesHeldItemTypeId() {
-        state.setHeldItemTypeId("block:redstone_ore");
-        state.setHeldItemEntityId(500);
+        data.setHeldItemTypeId("block:redstone_ore");
+        data.setHeldItemEntityId(500);
         
-        CraneStateComponent cloned = (CraneStateComponent) state.clone();
+        CraneStateData cloned = data.clone();
         
         assertEquals("block:redstone_ore", cloned.getHeldItemTypeId());
         assertEquals(500, cloned.getHeldItemEntityId());
@@ -75,7 +75,7 @@ class CraneStateComponentHeldItemTest {
 
     @Test
     void clonePreservesNullHeldItemTypeId() {
-        CraneStateComponent cloned = (CraneStateComponent) state.clone();
+        CraneStateData cloned = data.clone();
         assertNull(cloned.getHeldItemTypeId());
     }
 
@@ -90,16 +90,16 @@ class CraneStateComponentHeldItemTest {
         };
         
         for (String itemTypeId : testCases) {
-            state.setHeldItemTypeId(itemTypeId);
-            assertEquals(itemTypeId, state.getHeldItemTypeId());
+            data.setHeldItemTypeId(itemTypeId);
+            assertEquals(itemTypeId, data.getHeldItemTypeId());
         }
     }
 
     @Test
     void setJobDoesNotAffectHeldItemTypeId() {
-        state.setHeldItemTypeId("block:gold_block");
-        state.setJob(10, 20, 30, 40, 50, 60);
+        data.setHeldItemTypeId("block:gold_block");
+        data.setJob(10, 20, 30, 40, 50, 60);
         
-        assertEquals("block:gold_block", state.getHeldItemTypeId());
+        assertEquals("block:gold_block", data.getHeldItemTypeId());
     }
 }

@@ -1,0 +1,9 @@
+{
+    "id": "hygrip:grip_base",
+    "name": "Crane Grip Base",
+    "model": "hygrip:models/block/grip_base.hmo",
+    "icon": "hygrip:items/grip_base.png",
+    "components": {
+        "hygrip:crane_state": {}
+    }
+}

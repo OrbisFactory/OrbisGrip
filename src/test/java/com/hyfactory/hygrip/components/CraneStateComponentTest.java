@@ -6,68 +6,68 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link CraneStateComponent} state logic (setJob, isArmAt).
- * Does not call clone() to avoid ItemStack dependency in test scope.
+ * Unit tests for {@link CraneStateData} state logic (setJob, isArmAt).
+ * Uses CraneStateData directly - no Hytale runtime dependency.
  */
 class CraneStateComponentTest {
 
-    private CraneStateComponent state;
+    private CraneStateData data;
 
     @BeforeEach
     void setUp() {
-        state = new CraneStateComponent();
-        state.setBaseX(0);
-        state.setBaseY(0);
-        state.setBaseZ(0);
+        data = new CraneStateData();
+        data.setBaseX(0);
+        data.setBaseY(0);
+        data.setBaseZ(0);
     }
 
     @Test
     void setJobMovesArmToBaseAndStartsMovingToSource() {
-        state.setJob(1, 0, 0, -1, 0, 0);
+        data.setJob(1, 0, 0, -1, 0, 0);
 
-        assertEquals(0, state.getArmX());
-        assertEquals(0, state.getArmY());
-        assertEquals(0, state.getArmZ());
-        assertEquals(CranePhase.MOVING_TO_SOURCE, state.getPhase());
-        assertEquals(1, state.getSourceX());
-        assertEquals(0, state.getSourceY());
-        assertEquals(0, state.getSourceZ());
-        assertEquals(-1, state.getTargetX());
-        assertEquals(0, state.getTargetY());
-        assertEquals(0, state.getTargetZ());
+        assertEquals(0, data.getArmX());
+        assertEquals(0, data.getArmY());
+        assertEquals(0, data.getArmZ());
+        assertEquals(CranePhase.MOVING_TO_SOURCE, data.getPhase());
+        assertEquals(1, data.getSourceX());
+        assertEquals(0, data.getSourceY());
+        assertEquals(0, data.getSourceZ());
+        assertEquals(-1, data.getTargetX());
+        assertEquals(0, data.getTargetY());
+        assertEquals(0, data.getTargetZ());
     }
 
     @Test
     void isArmAtReturnsTrueWhenPositionMatches() {
-        state.setArmX(3);
-        state.setArmY(5);
-        state.setArmZ(7);
-        assertTrue(state.isArmAt(3, 5, 7));
+        data.setArmX(3);
+        data.setArmY(5);
+        data.setArmZ(7);
+        assertTrue(data.isArmAt(3, 5, 7));
     }
 
     @Test
     void isArmAtReturnsFalseWhenAnyCoordinateDiffers() {
-        state.setArmX(3);
-        state.setArmY(5);
-        state.setArmZ(7);
-        assertFalse(state.isArmAt(2, 5, 7));
-        assertFalse(state.isArmAt(3, 4, 7));
-        assertFalse(state.isArmAt(3, 5, 8));
+        data.setArmX(3);
+        data.setArmY(5);
+        data.setArmZ(7);
+        assertFalse(data.isArmAt(2, 5, 7));
+        assertFalse(data.isArmAt(3, 4, 7));
+        assertFalse(data.isArmAt(3, 5, 8));
     }
 
     @Test
     void gettersAndSettersForGripDefinitionId() {
         // The new system uses gripDefinitionId instead of moveSpeed/maxReach
         // The actual speed/maxReach comes from GripRegistry based on the ID
-        state.setGripDefinitionId("hygrip:standard_hook");
-        assertEquals("hygrip:standard_hook", state.getGripDefinitionId());
+        data.setGripDefinitionId("hygrip:standard_hook");
+        assertEquals("hygrip:standard_hook", data.getGripDefinitionId());
         
         // Test held item entity tracking (Phase 4)
-        state.setHeldItemEntityId(12345);
-        assertTrue(state.hasHeldItemEntity());
-        assertEquals(12345, state.getHeldItemEntityId());
+        data.setHeldItemEntityId(12345);
+        assertTrue(data.hasHeldItemEntity());
+        assertEquals(12345, data.getHeldItemEntityId());
         
-        state.setHeldItemEntityId(-1);
-        assertFalse(state.hasHeldItemEntity());
+        data.setHeldItemEntityId(-1);
+        assertFalse(data.hasHeldItemEntity());
     }
 }
